@@ -123,6 +123,14 @@ app.on('window-all-closed', () => {
   }
 });
 
+app.on('will-quit', (event) => {
+  const pid = store.get('pid');
+  event.preventDefault();
+  if (typeof pid === 'number') {
+    kill(pid);
+  }
+});
+
 app
   .whenReady()
   .then(() => {
