@@ -30,6 +30,7 @@ const SliderInput = (props: SliderInputProps) => {
         defaultValue={props.value}
         min={props.min}
         max={props.max}
+        step={0.1}
         onChange={props.onChange}
       >
         <SliderTrack>
