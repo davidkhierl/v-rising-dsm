@@ -1,5 +1,9 @@
 import {
+  Alert,
+  AlertIcon,
+  Box,
   Button,
+  Code,
   Drawer,
   DrawerBody,
   DrawerCloseButton,
@@ -16,7 +20,7 @@ import { GameSettingsObject } from 'renderer/types/game-settings';
 
 export type GameSettingsProps = Pick<DrawerProps, 'finalFocusRef'>;
 
-const GameSettings = (props: GameSettingsProps) => {
+const GameSettingsDrawer = (props: GameSettingsProps) => {
   const isGameSettingsModalOpen = useAppStore(
     (state) => state.isGameSettingsModalOpen
   );
@@ -27,8 +31,12 @@ const GameSettings = (props: GameSettingsProps) => {
   const [gameSettingsData, setGameSettingsData] =
     useState<Partial<GameSettingsObject>>();
 
+  const [errorLoadingGameSettingsData, setErrorLoadingGameSettingsData] =
+    useState(false);
+
   useEffect(() => {
     if (isGameSettingsModalOpen) {
+      setErrorLoadingGameSettingsData(false);
       window.electron
         .loadGameSettingsData()
         .then((data) => {
@@ -51,8 +59,11 @@ const GameSettings = (props: GameSettingsProps) => {
           return data;
         })
         .catch((err) => {
-          console.error(err);
+          console.log(err);
         });
+    });
+    window.electron.ipcRenderer.on('error-load-game-settings-data', (err) => {
+      if (err instanceof Error) setErrorLoadingGameSettingsData(true);
     });
   }, [toggleGameSettingsModal]);
 
@@ -69,6 +80,16 @@ const GameSettings = (props: GameSettingsProps) => {
         <DrawerCloseButton />
         <DrawerHeader>Game Settings</DrawerHeader>
         <DrawerBody>
+          {errorLoadingGameSettingsData && (
+            <Alert status="error">
+              <AlertIcon />
+              Missing{' '}
+              <Box as="span" mx={2}>
+                <Code>ServerGameSettings.json</Code>
+              </Box>
+              Make sure you have the correct Settings directory.
+            </Alert>
+          )}
           <GameSettingsItems
             gameSettingsData={gameSettingsData}
             setGameSettingsData={setGameSettingsData}
@@ -80,6 +101,7 @@ const GameSettings = (props: GameSettingsProps) => {
           </Button>
           <Button
             colorScheme="green"
+            isDisabled={errorLoadingGameSettingsData}
             onClick={() => {
               if (gameSettingsData)
                 window.electron.saveGameSettingsConfig(gameSettingsData);
@@ -93,4 +115,4 @@ const GameSettings = (props: GameSettingsProps) => {
   );
 };
 
-export default GameSettings;
+export default GameSettingsDrawer;

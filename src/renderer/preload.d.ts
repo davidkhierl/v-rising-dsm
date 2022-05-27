@@ -16,7 +16,11 @@ declare global {
         setServerBatPath: () => void;
         getServerSettingsDir: () => string | undefined;
         setServerSettingsDir: () => void;
-        initialConfigFinish: () => void;
+        setPathConfig: (options?: {
+          initial?: boolean;
+          batPath: string;
+          settingsDir: string;
+        }) => void;
         isInitialConfigFinish: () => boolean;
       };
       startServer: () => void;

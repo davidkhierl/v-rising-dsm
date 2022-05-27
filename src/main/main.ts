@@ -148,16 +148,18 @@ ipcMain.on('set-server-bat-path', async (event) => {
     properties: ['openFile'],
     filters: [{ name: 'bat', extensions: ['bat'] }],
   });
-  if (!value.canceled) store.set('serverBatPath', value.filePaths[0]);
-  event.reply('set-server-bat-path-success', value.filePaths[0]);
+  if (!value.canceled) {
+    event.reply('set-server-bat-path', value.filePaths[0]);
+  }
 });
 
 ipcMain.on('set-server-settings-dir', async (event) => {
   const value = await dialog.showOpenDialog({
     properties: ['openDirectory'],
   });
-  if (!value.canceled) store.set('serverSettingsDir', value.filePaths[0]);
-  event.reply('set-server-settings-dir-success', value.filePaths[0]);
+  if (!value.canceled) {
+    event.reply('set-server-settings-dir', value.filePaths[0]);
+  }
 });
 
 ipcMain.on('start-server', (event) => {
@@ -194,17 +196,32 @@ ipcMain.on('stop-server', () => {
   }
 });
 
-ipcMain.on('set-initial-config-finish', (event) => {
-  store.set('initialConfigFinish', true);
-  event.reply('initial-config-finish', true);
+ipcMain.on('set-path-config', (event, options) => {
+  if (
+    options?.initial &&
+    typeof options.initial === 'boolean' &&
+    options.initial
+  )
+    store.set('initialConfigFinish', true);
+
+  if (options?.batPath && options.settingsDir) {
+    store.set('serverBatPath', options.batPath);
+    store.set('serverSettingsDir', options.settingsDir);
+  }
+  event.reply('set-path-config-success', options?.initial);
 });
 
-ipcMain.handle('load-game-settings-data', async () => {
+ipcMain.handle('load-game-settings-data', async (event) => {
   const jsonPath = `${getServerSettingsDir()}\\ServerGameSettings.json`;
   delete require.cache[jsonPath];
-  // eslint-disable-next-line import/no-dynamic-require
-  const file = require(jsonPath);
-  return file;
+  try {
+    // eslint-disable-next-line import/no-dynamic-require
+    const file = require(jsonPath);
+    return file;
+  } catch (error) {
+    event.sender.send('error-load-game-settings-data', error);
+    return undefined;
+  }
 });
 
 ipcMain.on('save-game-settings-config', (event, data) => {

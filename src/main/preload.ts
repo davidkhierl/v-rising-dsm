@@ -41,8 +41,12 @@ contextBridge.exposeInMainWorld('electron', {
     setServerSettingsDir: () => {
       ipcRenderer.send('set-server-settings-dir');
     },
-    initialConfigFinish: () => {
-      ipcRenderer.send('set-initial-config-finish');
+    setPathConfig: (options?: {
+      initial: boolean;
+      batPath: string;
+      settingsDir: string;
+    }) => {
+      ipcRenderer.send('set-path-config', options);
     },
     isInitialConfigFinish: () => {
       const isFinish = store.get('initialConfigFinish');

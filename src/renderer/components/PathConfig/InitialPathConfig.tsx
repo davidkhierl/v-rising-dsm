@@ -11,7 +11,7 @@ import {
 import { useEffect, useState } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 
-const InitialConfig = () => {
+const InitialPathConfig = () => {
   const [serverBatPath, setServerBatPath] = useState(
     window.electron.config.getServerBatPath()
   );
@@ -91,8 +91,15 @@ const InitialConfig = () => {
         <Button
           size="lg"
           colorScheme="green"
-          isDisabled={!serverBatPath && !serverSettingsDir}
-          onClick={() => window.electron.config.initialConfigFinish()}
+          isDisabled={!serverBatPath || !serverSettingsDir}
+          onClick={() => {
+            if (serverBatPath && serverSettingsDir)
+              window.electron.config.setPathConfig({
+                initial: true,
+                batPath: serverBatPath,
+                settingsDir: serverSettingsDir,
+              });
+          }}
         >
           Save
         </Button>
@@ -101,4 +108,4 @@ const InitialConfig = () => {
   );
 };
 
-export default InitialConfig;
+export default InitialPathConfig;

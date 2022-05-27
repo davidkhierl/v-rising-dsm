@@ -1,7 +1,7 @@
 import { Flex } from '@chakra-ui/react';
 
 import { ReactNode, useEffect, useState } from 'react';
-import InitialConfig from 'renderer/components/InitialConfig/InitialConfig';
+import InitialPathConfig from 'renderer/components/PathConfig/InitialPathConfig';
 import ServerHeader from 'renderer/components/ServerHeader/ServerHeader';
 
 export interface LayoutProps {
@@ -15,9 +15,9 @@ const Layout = (props: LayoutProps) => {
 
   useEffect(() => {
     const isInitialConfigFinishListener = window.electron.ipcRenderer.on(
-      'initial-config-finish',
-      (isFinish) => {
-        setIsInitialConfigFinish(isFinish as boolean);
+      'set-config-path-success',
+      (isInitial) => {
+        if (isInitial) setIsInitialConfigFinish(isInitial as boolean);
       }
     );
     return () => {
@@ -33,7 +33,7 @@ const Layout = (props: LayoutProps) => {
           <Flex flex={1}>{props?.children}</Flex>
         </>
       ) : (
-        <InitialConfig />
+        <InitialPathConfig />
       )}
     </Flex>
   );
