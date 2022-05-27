@@ -15,7 +15,7 @@ const Layout = (props: LayoutProps) => {
 
   useEffect(() => {
     const isInitialConfigFinishListener = window.electron.ipcRenderer.on(
-      'set-config-path-success',
+      'set-path-config-success',
       (isInitial) => {
         if (isInitial) setIsInitialConfigFinish(isInitial as boolean);
       }

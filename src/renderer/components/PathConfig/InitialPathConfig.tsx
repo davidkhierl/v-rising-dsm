@@ -22,14 +22,14 @@ const InitialPathConfig = () => {
 
   useEffect(() => {
     const setServerBatPathSuccess = window.electron.ipcRenderer.on(
-      'set-server-bat-path-success',
+      'set-server-bat-path',
       (path) => {
         setServerBatPath(path as string);
       }
     );
 
     const setServerSettingsDirSuccess = window.electron.ipcRenderer.on(
-      'set-server-settings-dir-success',
+      'set-server-settings-dir',
       (path) => {
         setServerSettingsDir(path as string);
       }

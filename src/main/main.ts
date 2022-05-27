@@ -16,6 +16,7 @@ import { spawn } from 'child_process';
 import kill from 'tree-kill';
 import fs from 'fs';
 import { GameSettingsObject } from 'renderer/types/game-settings';
+import merge from 'lodash/merge';
 import {
   getServerBatPath,
   getServerSettingsDir,
@@ -201,14 +202,51 @@ ipcMain.on('set-path-config', (event, options) => {
     options?.initial &&
     typeof options.initial === 'boolean' &&
     options.initial
-  )
-    store.set('initialConfigFinish', true);
+  ) {
+    if (options?.batPath && options.settingsDir) {
+      store.set('serverBatPath', options.batPath);
+      store.set('serverSettingsDir', options.settingsDir);
+    }
 
-  if (options?.batPath && options.settingsDir) {
-    store.set('serverBatPath', options.batPath);
-    store.set('serverSettingsDir', options.settingsDir);
+    try {
+      const serverGameSettingsPath = `${getServerSettingsDir()}\\ServerGameSettings.json`;
+      // eslint-disable-next-line import/no-dynamic-require
+      const serverGameSettings = require(serverGameSettingsPath);
+
+      const serverBatPath = getServerBatPath();
+      if (!serverBatPath) throw new Error('Server bat path undefined');
+
+      const defaultServerGameSettingsPath = `${path.dirname(
+        serverBatPath
+      )}\\VRisingServer_Data\\StreamingAssets\\Settings\\ServerGameSettings.json`;
+
+      // eslint-disable-next-line import/no-dynamic-require
+      const defaultServerGameSettings = require(defaultServerGameSettingsPath);
+
+      const result = merge(defaultServerGameSettings, serverGameSettings);
+
+      fs.writeFileSync(
+        serverGameSettingsPath,
+        JSON.stringify(result as Partial<GameSettingsObject>, null, 2)
+      );
+
+      store.set('initialConfigFinish', true);
+      event.reply('set-path-config-success', options?.initial);
+    } catch (error) {
+      console.log(error);
+      const serverGameSettingsDir = getServerSettingsDir();
+      if (serverGameSettingsDir)
+        fs.copyFile(
+          './assets/ServerGameSettings.json',
+          `${serverGameSettingsDir}\\ServerGameSettings.json`,
+          (err) => {
+            if (err) console.log('Failed to copy default settings');
+            store.set('initialConfigFinish', true);
+            event.reply('set-path-config-success', options?.initial);
+          }
+        );
+    }
   }
-  event.reply('set-path-config-success', options?.initial);
 });
 
 ipcMain.handle('load-game-settings-data', async (event) => {
