@@ -1,39 +1,3 @@
-export type GameConfigs = Array<
-  FieldSelect | FieldSlider | FieldToggle | NestedField
->;
-
-export interface Field {
-  fieldName: string;
-  type: FieldType;
-  default: number | string | boolean;
-  description?: string;
-}
-
-export interface FieldSelect extends Field {
-  type: 'select';
-  settings: string[];
-  default: string;
-}
-
-export interface FieldSlider extends Field {
-  min: number;
-  max: number;
-  type: 'slider';
-  default: number;
-}
-
-export interface FieldToggle extends Field {
-  type: 'toggle';
-  default: boolean;
-}
-
-export interface NestedField extends Omit<Field, 'default'> {
-  type: 'nested-field';
-  children: GameConfigs;
-}
-
-export type FieldType = 'slider' | 'select' | 'toggle' | 'nested-field';
-
 const gameConfigs: GameConfigs = [
   {
     fieldName: 'GameModeType',
@@ -105,6 +69,140 @@ const gameConfigs: GameConfigs = [
     default: false,
     description:
       'Determines whether or not you can loot the chests of other players not in your clan.',
+  },
+  {
+    fieldName: 'BloodBoundEquipment',
+    type: 'toggle',
+    default: true,
+    description:
+      'Determines whether or not you keep your equipment after dying.',
+  },
+  {
+    fieldName: 'TeleportBoundItems',
+    type: 'toggle',
+    default: true,
+    description:
+      'Determines whether or not items will block you from teleporting through a Vampire Waygate.',
+  },
+  {
+    fieldName: 'AllowGlobalChat',
+    type: 'toggle',
+    default: true,
+    description: 'Turns Global Chat on or off.',
+  },
+  {
+    fieldName: 'AllWaypointsUnlocked',
+    type: 'toggle',
+    default: false,
+    description:
+      'Determines whether all Vampire Waygates are active or inactive when in a new world.',
+  },
+  {
+    fieldName: 'FreeCastleClaim',
+    type: 'toggle',
+    default: false,
+    description:
+      'Determines whether or not Castles can be claimed at no resource cost.',
+  },
+  {
+    fieldName: 'FreeCastleDestroy',
+    type: 'toggle',
+    default: false,
+    description:
+      'Determines whether or not Castles can be destroyed at no resource cost.',
+  },
+  {
+    fieldName: 'InactivityKillEnabled',
+    type: 'toggle',
+    default: true,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'InactivityKillTimeMin',
+    type: 'slider',
+    default: 333600,
+    min: 1000,
+    max: 10000,
+    steps: 10,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'InactivityKillTimeMax',
+    type: 'slider',
+    default: 604800,
+    min: 10000,
+    max: 604800,
+    steps: 10,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'InactivityKillSafeTimeAddition',
+    type: 'slider',
+    default: 172800,
+    min: 10000,
+    max: 20000,
+    steps: 10,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'InactivityKillTimerMaxItemLevel',
+    type: 'slider',
+    default: 84,
+    min: 0,
+    max: 100,
+    steps: 1,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'DisableDisconnectedDeadEnabled',
+    type: 'toggle',
+    default: true,
+    description: 'Its function is not known yet',
+  },
+  {
+    fieldName: 'InventoryStacksModifier',
+    type: 'slider',
+    default: 1.0,
+    min: 0.1,
+    max: 5,
+    steps: 0.1,
+    description: 'Modifies the size of inventory stacks.',
+  },
+  {
+    fieldName: 'DropTableModifier_General',
+    type: 'slider',
+    default: 1.0,
+    min: 0.1,
+    max: 5,
+    steps: 0.1,
+    description: 'Modifies how much loot enemies drop.',
+  },
+  {
+    fieldName: 'DropTableModifier_Missions',
+    type: 'slider',
+    default: 1.0,
+    min: 0.1,
+    max: 5,
+    steps: 0.1,
+    description: 'Modifies how much loot drops from quests.',
+  },
+  {
+    fieldName: 'MaterialYieldModifier_Global',
+    type: 'slider',
+    default: 1.0,
+    min: 0.1,
+    max: 5,
+    steps: 0.1,
+    description: 'Modifies how much loot drops when you mine a resource node.',
+  },
+  {
+    fieldName: 'BloodEssenceYieldModifier',
+    type: 'slider',
+    default: 1.0,
+    min: 0.1,
+    max: 5,
+    steps: 0.1,
+    description: 'Modifies how much Blood Essence you get from an enemy.',
   },
 ];
 

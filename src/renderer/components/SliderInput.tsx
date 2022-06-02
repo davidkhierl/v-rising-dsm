@@ -8,14 +8,12 @@ import {
   FormHelperText,
 } from '@chakra-ui/react';
 
-export interface SliderInputProps {
-  id: string;
-  label: string;
-  helperText?: string;
+export interface SliderInputProps extends FieldProps {
   value?: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
+  steps?: number;
 }
 
 const SliderInput = (props: SliderInputProps) => {
@@ -30,7 +28,7 @@ const SliderInput = (props: SliderInputProps) => {
         defaultValue={props.value}
         min={props.min}
         max={props.max}
-        step={0.1}
+        step={props.steps}
         onChange={props.onChange}
       >
         <SliderTrack>
@@ -38,7 +36,17 @@ const SliderInput = (props: SliderInputProps) => {
         </SliderTrack>
         <SliderThumb />
       </Slider>
-      {props.helperText && <FormHelperText>{props.helperText}</FormHelperText>}
+      {props.helperText && (
+        <FormHelperText
+          color={
+            props.helperText === 'Its function is not known yet'
+              ? 'orange.500'
+              : undefined
+          }
+        >
+          {props.helperText}
+        </FormHelperText>
+      )}
     </FormControl>
   );
 };

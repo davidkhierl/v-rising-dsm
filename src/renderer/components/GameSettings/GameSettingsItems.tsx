@@ -1,133 +1,92 @@
+/* eslint-disable no-useless-return */
+/* eslint-disable consistent-return */
 import { Stack } from '@chakra-ui/react';
-import { SetStateAction } from 'react';
+import SelectInput from 'renderer/components/SelectInput';
 import SliderInput from 'renderer/components/SliderInput';
-import { GameSettingsObject } from 'renderer/types/game-settings';
+import gameConfigs from 'renderer/gameConfigItems';
+import get from 'lodash/get';
+import { useGameSettingsStore } from 'renderer/store/gameSettingsStore';
+import ToggleInput from 'renderer/components/ToggleInput';
+import {
+  isFieldTypeSlider,
+  isFieldTypeSelect,
+  isFieldTypeToggle,
+} from 'renderer/utils/utils';
+import { useMemo } from 'react';
 
-export interface GameSettingsItemsProps {
-  gameSettingsData?: Partial<GameSettingsObject>;
-  setGameSettingsData: React.Dispatch<
-    SetStateAction<Partial<GameSettingsObject> | undefined>
-  >;
-}
+const GameSettingsItems = () => {
+  const gameSettings = useGameSettingsStore((state) => state.gameSettings);
 
-const GameSettingsItems = ({
-  gameSettingsData,
-  setGameSettingsData,
-}: GameSettingsItemsProps) => {
+  const setGameSettings = useGameSettingsStore(
+    (state) => state.setGameSettings
+  );
+
+  const gameSettingsField = useMemo(
+    () =>
+      gameConfigs.map((setting) => {
+        if (!gameSettings) return;
+        if (isFieldTypeSlider(setting)) {
+          return (
+            <SliderInput
+              key={setting.fieldName}
+              id={setting.fieldName}
+              label={setting.fieldName}
+              helperText={setting.description}
+              min={setting.min}
+              max={setting.max}
+              steps={setting.steps}
+              value={get(gameSettings, setting.fieldName) ?? setting.default}
+              onChange={(value) =>
+                setGameSettings({
+                  [setting.fieldName]: value,
+                })
+              }
+            />
+          );
+        }
+
+        if (isFieldTypeSelect(setting)) {
+          return (
+            <SelectInput
+              key={setting.fieldName}
+              id={setting.fieldName}
+              label={setting.fieldName}
+              helperText={setting.description}
+              settings={setting.settings}
+              value={get(gameSettings, setting.fieldName) ?? setting.default}
+              onChange={(value) =>
+                setGameSettings({
+                  [setting.fieldName]: value.currentTarget.value,
+                })
+              }
+            />
+          );
+        }
+
+        if (isFieldTypeToggle(setting)) {
+          return (
+            <ToggleInput
+              key={setting.fieldName}
+              id={setting.fieldName}
+              label={setting.fieldName}
+              helperText={setting.description}
+              value={get(gameSettings, setting.fieldName) ?? setting.default}
+              onChange={(value) =>
+                setGameSettings({
+                  [setting.fieldName]: value,
+                })
+              }
+            />
+          );
+        }
+
+        return;
+      }),
+    [gameSettings, setGameSettings]
+  );
   return (
-    <Stack spacing={8} py={4}>
-      {gameSettingsData?.BloodEssenceYieldModifier && (
-        <SliderInput
-          id="BloodEssenceYieldModifier"
-          label="BloodEssenceYieldModifier"
-          helperText="Modifies how much Blood Essence you get from an enemy."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.BloodEssenceYieldModifier}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              BloodEssenceYieldModifier: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.DropTableModifier_General && (
-        <SliderInput
-          id="DropTableModifier_General"
-          label="DropTableModifier_General"
-          helperText="Modifies how much loot enemies drop."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.DropTableModifier_General}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              DropTableModifier_General: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.DropTableModifier_Missions && (
-        <SliderInput
-          id="DropTableModifier_Missions"
-          label="BloodEssenceYieldModifier"
-          helperText="Modifies how much loot drops from quests."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.DropTableModifier_Missions}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              DropTableModifier_Missions: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.InventoryStacksModifier && (
-        <SliderInput
-          id="InventoryStacksModifier"
-          label="InventoryStacksModifier"
-          helperText="Modifies the size of inventory stacks."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.InventoryStacksModifier}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              InventoryStacksModifier: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.MaterialYieldModifier_Global && (
-        <SliderInput
-          id="MaterialYieldModifier_Global"
-          label="MaterialYieldModifier_Global"
-          helperText="Modifies how much loot drops when you mine a resource node."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.MaterialYieldModifier_Global}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              MaterialYieldModifier_Global: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.RefinementRateModifier && (
-        <SliderInput
-          id="RefinementRateModifier"
-          label="RefinementRateModifier"
-          helperText="Modifies the rate of Refining"
-          min={0.1}
-          max={5}
-          value={gameSettingsData.RefinementRateModifier}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              RefinementRateModifier: value,
-            }))
-          }
-        />
-      )}
-      {gameSettingsData?.ServantConvertRateModifier && (
-        <SliderInput
-          id="ServantConvertRateModifier"
-          label="ServantConvertRateModifier"
-          helperText="Modifies the time it takes to convert a Servant."
-          min={0.1}
-          max={5}
-          value={gameSettingsData.ServantConvertRateModifier}
-          onChange={(value) =>
-            setGameSettingsData((state) => ({
-              ...state,
-              ServantConvertRateModifier: value,
-            }))
-          }
-        />
-      )}
+    <Stack spacing={12} py={4}>
+      {gameSettingsField}
     </Stack>
   );
 };

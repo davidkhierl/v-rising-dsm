@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import {
   Alert,
   AlertIcon,
@@ -16,6 +17,7 @@ import {
 import { useEffect, useState } from 'react';
 import GameSettingsItems from 'renderer/components/GameSettings/GameSettingsItems';
 import { useAppStore } from 'renderer/store/appStore';
+import { useGameSettingsStore } from 'renderer/store/gameSettingsStore';
 import { GameSettingsObject } from 'renderer/types/game-settings';
 
 export type GameSettingsProps = Pick<DrawerProps, 'finalFocusRef'>;
@@ -28,25 +30,31 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
     (state) => state.toggleGameSettingsModal
   );
 
-  const [gameSettingsData, setGameSettingsData] =
-    useState<Partial<GameSettingsObject>>();
+  const gameSettings = useGameSettingsStore((state) => state.gameSettings);
+
+  const setGameSettings = useGameSettingsStore(
+    (state) => state.setGameSettings
+  );
 
   const [errorLoadingGameSettingsData, setErrorLoadingGameSettingsData] =
     useState(false);
 
   useEffect(() => {
+    let gameSettingsCopy: Partial<GameSettingsObject> | undefined;
     if (isGameSettingsModalOpen) {
       setErrorLoadingGameSettingsData(false);
       window.electron
         .loadGameSettingsData()
         .then((data) => {
-          setGameSettingsData(data);
+          setGameSettings(data);
+          gameSettingsCopy = data;
           return data;
         })
         .catch((err) => {
           console.error(err);
         });
-    }
+    } else if (gameSettingsCopy) setGameSettings(gameSettingsCopy);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isGameSettingsModalOpen]);
 
   useEffect(() => {
@@ -55,7 +63,7 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
       window.electron
         .loadGameSettingsData()
         .then((data) => {
-          setGameSettingsData(data);
+          setGameSettings(data);
           return data;
         })
         .catch((err) => {
@@ -65,6 +73,7 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
     window.electron.ipcRenderer.on('error-load-game-settings-data', (err) => {
       if (err instanceof Error) setErrorLoadingGameSettingsData(true);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [toggleGameSettingsModal]);
 
   return (
@@ -73,7 +82,7 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
       onClose={() => toggleGameSettingsModal(false)}
       finalFocusRef={props.finalFocusRef}
       size="full"
-      placement="bottom"
+      // placement="bottom"
     >
       <DrawerOverlay />
       <DrawerContent>
@@ -90,10 +99,7 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
               Make sure you have the correct Settings directory.
             </Alert>
           )}
-          <GameSettingsItems
-            gameSettingsData={gameSettingsData}
-            setGameSettingsData={setGameSettingsData}
-          />
+          <GameSettingsItems />
         </DrawerBody>
         <DrawerFooter borderTopWidth="1px">
           <Button mr={3} onClick={() => toggleGameSettingsModal()}>
@@ -103,8 +109,8 @@ const GameSettingsDrawer = (props: GameSettingsProps) => {
             colorScheme="green"
             isDisabled={errorLoadingGameSettingsData}
             onClick={() => {
-              if (gameSettingsData)
-                window.electron.saveGameSettingsConfig(gameSettingsData);
+              if (gameSettings)
+                window.electron.saveGameSettingsConfig(gameSettings);
             }}
           >
             Save
