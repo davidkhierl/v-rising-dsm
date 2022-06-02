@@ -1,35 +1,22 @@
 {
-  "description": "A foundation for scalable desktop apps",
-  "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "typescript",
-    "ts",
-    "sass",
-    "webpack",
-    "hot",
-    "reload"
-  ],
-  "homepage": "https://github.com/electron-react-boilerplate/electron-react-boilerplate#readme",
+  "description": "V Rising Dedicated Server Manager",
+  "homepage": "https://github.com/davidkhierl/v-rising-dsm.git#readme",
   "bugs": {
-    "url": "https://github.com/electron-react-boilerplate/electron-react-boilerplate/issues"
+    "url": "https://github.com/davidkhierl/v-rising-dsm.git/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/electron-react-boilerplate/electron-react-boilerplate.git"
+    "url": "git+https://github.com/davidkhierl/v-rising-dsm.git"
   },
   "license": "MIT",
   "author": {
-    "name": "Electron React Boilerplate Maintainers",
-    "email": "electronreactboilerplate@gmail.com",
-    "url": "https://electron-react-boilerplate.js.org"
+    "name": "V Rising Dedicated Server Manager"
   },
   "contributors": [
     {
-      "name": "Amila Welihinda",
-      "email": "amilajack@gmail.com",
-      "url": "https://github.com/amilajack"
+      "name": "David Khierl",
+      "email": "dkrgidor@gmail.com",
+      "url": "https://github.com/davidkhierl"
     }
   ],
   "main": "./src/main/main.ts",
@@ -194,7 +181,7 @@
   },
   "build": {
     "productName": "V Rising Dedicated Server Manager",
-    "appId": "org.erb.ElectronReact",
+    "appId": "org.erb.VRisingDedicatedServerManager",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
@@ -233,8 +220,9 @@
     },
     "win": {
       "target": [
-        "nsis"
-      ]
+        "portable"
+      ],
+      "artifactName": "V Rising Dedicated Server Manager.exe"
     },
     "linux": {
       "target": [
@@ -252,12 +240,9 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "electron-react-boilerplate",
-      "repo": "electron-react-boilerplate"
+      "owner": "v-rising-dsm",
+      "repo": "v-rising-dsm"
     }
-  },
-  "collective": {
-    "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
     "node": ">=14.x",
