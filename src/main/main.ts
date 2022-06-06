@@ -211,8 +211,9 @@ ipcMain.on('set-path-config', (event, options) => {
 
     try {
       const serverGameSettingsPath = `${getServerSettingsDir()}\\ServerGameSettings.json`;
-      // eslint-disable-next-line import/no-dynamic-require
-      const serverGameSettings = require(serverGameSettingsPath);
+      const serverGameSettings = JSON.parse(
+        fs.readFileSync(serverGameSettingsPath).toString()
+      );
 
       const serverBatPath = getServerBatPath();
       if (!serverBatPath) throw new Error('Server bat path undefined');
@@ -221,8 +222,9 @@ ipcMain.on('set-path-config', (event, options) => {
         serverBatPath
       )}\\VRisingServer_Data\\StreamingAssets\\Settings\\ServerGameSettings.json`;
 
-      // eslint-disable-next-line import/no-dynamic-require
-      const defaultServerGameSettings = require(defaultServerGameSettingsPath);
+      const defaultServerGameSettings = JSON.parse(
+        fs.readFileSync(defaultServerGameSettingsPath).toString()
+      );
 
       const result = merge(defaultServerGameSettings, serverGameSettings);
 
@@ -252,11 +254,9 @@ ipcMain.on('set-path-config', (event, options) => {
 
 ipcMain.handle('load-game-settings-data', async (event) => {
   const jsonPath = `${getServerSettingsDir()}\\ServerGameSettings.json`;
-  delete require.cache[jsonPath];
   try {
-    // eslint-disable-next-line import/no-dynamic-require
-    const file = require(jsonPath);
-    return file;
+    const rawFile = fs.readFileSync(jsonPath);
+    return JSON.parse(rawFile.toString());
   } catch (error) {
     event.sender.send('error-load-game-settings-data', error);
     return undefined;
