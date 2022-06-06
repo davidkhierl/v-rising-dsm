@@ -120,18 +120,13 @@ app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
   if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('will-quit', (event) => {
-  const pid = store.get('pid');
-  if (typeof pid === 'number') {
-    event.preventDefault();
-    kill(pid);
-    app.quit();
-  } else {
-    app.quit();
+    const pid = store.get('pid');
+    if (typeof pid === 'number') {
+      kill(pid, () => {
+        store.delete('pid');
+        app.quit();
+      });
+    }
   }
 });
 
