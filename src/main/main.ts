@@ -130,6 +130,8 @@ app.on('will-quit', (event) => {
     event.preventDefault();
     kill(pid);
     app.quit();
+  } else {
+    app.quit();
   }
 });
 
